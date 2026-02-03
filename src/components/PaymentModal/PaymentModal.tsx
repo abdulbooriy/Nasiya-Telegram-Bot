@@ -16,7 +16,13 @@ import {
   MenuItem,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import { DollarSign, CreditCard, FileText, Calendar, Wallet } from "lucide-react";
+import {
+  DollarSign,
+  CreditCard,
+  FileText,
+  Calendar,
+  Wallet,
+} from "lucide-react";
 
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import {
@@ -65,7 +71,11 @@ const PaymentModal: FC<PaymentModalProps> = ({
   const [currencyCourse, setCurrencyCourse] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<string>("som_cash"); // ✅ YANGI: To'lov usuli
+  const [paymentMethod, setPaymentMethod] = useState<string>("dollar_cash"); // ✅ YANGI: To'lov usuli
+
+  const [checkIfMethodSet, setCheckIfMethodSet] = useState(false);
+  //  Tasdiqlashdan oldin to'lov usuli to'g'ri tanlanganini tekshirish
+
   const [nextPaymentDate, setNextPaymentDate] = useState<string>(() => {
     // Default: Ertaga, 10:00
     const tomorrow = new Date();
@@ -146,6 +156,14 @@ const PaymentModal: FC<PaymentModalProps> = ({
       setLoading(false);
       return;
     }
+    
+    
+    if (!checkIfMethodSet) {
+      setError("To'lov usuli tanlanmadi. Iltimos, qayta urinib ko'ring."); // ✅ YANGI: To'lov usuli
+      setLoading(false);
+      return;
+    }
+    
 
     if (isUnderpaid && !nextPaymentDate) {
       setError("Kam to'lov qilganda keyingi to'lov sanasini belgilang!");
@@ -196,7 +214,6 @@ const PaymentModal: FC<PaymentModalProps> = ({
           await dispatch(payNewDebt(payload)).unwrap();
         }
       }
-
 
       onSuccess();
 
@@ -249,8 +266,8 @@ const PaymentModal: FC<PaymentModalProps> = ({
               {isPayAll
                 ? "Barchasini to'lash"
                 : isDebtPayment
-                ? "Qarzni to'lash"
-                : "To'lov"}
+                  ? "Qarzni to'lash"
+                  : "To'lov"}
               {targetMonth && !isPayAll && (
                 <Typography
                   component="span"
@@ -269,12 +286,11 @@ const PaymentModal: FC<PaymentModalProps> = ({
               {isDebtPayment
                 ? `${targetMonth}-oy uchun qolgan qism`
                 : isPayAll
-                ? "Barcha to'lovlar"
-                : targetMonth
-                ? `${targetMonth}-oylik to'lov`
-                : "To'lov ma'lumotlari"}
+                  ? "Barcha to'lovlar"
+                  : targetMonth
+                    ? `${targetMonth}-oylik to'lov`
+                    : "To'lov ma'lumotlari"}
             </Typography>
-
           </Box>
         </Box>
       </DialogTitle>
@@ -313,8 +329,8 @@ const PaymentModal: FC<PaymentModalProps> = ({
                 {isDebtPayment
                   ? "Qolgan qarz:"
                   : isPayAll
-                  ? "Jami qolgan qarz:"
-                  : "To'lanadigan summa:"}
+                    ? "Jami qolgan qarz:"
+                    : "To'lanadigan summa:"}
               </Typography>
             </Box>
             <Typography variant="h5" fontWeight="bold">
@@ -437,7 +453,10 @@ const PaymentModal: FC<PaymentModalProps> = ({
               id="payment-method-select"
               value={paymentMethod}
               label="To'lov usuli"
-              onChange={(e) => setPaymentMethod(e.target.value)}
+              onChange={(e) => {
+                setPaymentMethod(e.target.value);
+                setCheckIfMethodSet(true);
+              }}
               startAdornment={
                 <InputAdornment position="start">
                   <Wallet size={20} color="#667eea" />
@@ -520,7 +539,7 @@ const PaymentModal: FC<PaymentModalProps> = ({
                     isUnderpaid && !nextPaymentDate
                       ? "Kam to'lov qilganda sana va vaqt majburiy!"
                       : `Qolgan $${remainingDebt.toFixed(
-                          2
+                          2,
                         )} ni to'lash sanasi va vaqti`
                   }
                   InputProps={{
@@ -607,18 +626,14 @@ const PaymentModal: FC<PaymentModalProps> = ({
             fontSize: { xs: "0.9rem", sm: "1rem" },
             fontWeight: 700,
             borderRadius: borderRadius.md,
-            background: loading
-              ? "rgba(0, 0, 0, 0.12)"
-              : "#10b981",
+            background: loading ? "rgba(0, 0, 0, 0.12)" : "#10b981",
             boxShadow: loading
               ? "none"
               : shadows.colored("rgba(16, 185, 129, 0.15)"),
             minWidth: { xs: "100%", sm: "auto" },
             whiteSpace: "nowrap",
             "&:hover": {
-              background: loading
-                ? "rgba(0, 0, 0, 0.12)"
-                : "#059669",
+              background: loading ? "rgba(0, 0, 0, 0.12)" : "#059669",
             },
             "&:disabled": {
               background: "rgba(0, 0, 0, 0.12)",
@@ -626,11 +641,7 @@ const PaymentModal: FC<PaymentModalProps> = ({
             },
           }}
         >
-          {loading
-            ? "Kutish..."
-            : isPayAll
-            ? "To'lash"
-            : "To'lash"}
+          {loading ? "Kutish..." : isPayAll ? "To'lash" : "To'lash"}
         </Button>
       </DialogActions>
     </Dialog>

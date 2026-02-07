@@ -54,8 +54,7 @@ const DialogTabNotes: FC<IProps> = ({ customerId }) => {
           borderRadius: borderRadius.md,
           bgcolor: "background.paper",
           boxShadow: shadows.sm,
-        }}
-      >
+        }}>
         <TextField
           id="comment-input"
           size="small"
@@ -90,31 +89,28 @@ const DialogTabNotes: FC<IProps> = ({ customerId }) => {
               bgcolor: "grey.300",
               color: "grey.500",
             },
-          }}
-        >
+          }}>
           <Plus size={24} />
         </IconButton>
       </Box>
 
-      {isLoading ? (
+      {isLoading ?
         <Box display="flex" justifyContent="center" py={4}>
           <CircularProgress />
         </Box>
-      ) : notes.length === 0 ? (
-        <Paper 
-          sx={{ 
-            p: 3, 
+      : notes.length === 0 ?
+        <Paper
+          sx={{
+            p: 3,
             borderRadius: borderRadius.md,
             boxShadow: shadows.sm,
             textAlign: "center",
-          }}
-        >
+          }}>
           <Typography variant="body2" color="text.secondary">
             Izohlar mavjud emas
           </Typography>
         </Paper>
-      ) : (
-        <List sx={{ py: 0 }}>
+      : <List sx={{ py: 0 }}>
           {notes.map((note) => {
             const isMine = note.createBy === user.id;
             return (
@@ -126,8 +122,7 @@ const DialogTabNotes: FC<IProps> = ({ customerId }) => {
                   mb: 2,
                   p: 0,
                   alignItems: "stretch",
-                }}
-              >
+                }}>
                 <Paper
                   sx={{
                     p: 2,
@@ -136,40 +131,35 @@ const DialogTabNotes: FC<IProps> = ({ customerId }) => {
                     width: "100%",
                     maxWidth: "100%",
                     overflow: "hidden",
-                  }}
-                >
+                  }}>
                   <Box
                     display="flex"
                     flexDirection={isMine ? "row-reverse" : "row"}
                     alignItems="flex-start"
                     gap={1.5}
-                    width="100%"
-                  >
+                    width="100%">
                     <Avatar
-                      sx={{ 
-                        bgcolor: "primary.main", 
+                      sx={{
+                        bgcolor: "primary.main",
                         color: "#fff",
                         width: 40,
                         height: 40,
                         flexShrink: 0,
-                      }}
-                    >
+                      }}>
                       {note.fullName?.charAt(0) || "?"}
                     </Avatar>
-                    <Box 
-                      sx={{ 
+                    <Box
+                      sx={{
                         flex: 1,
                         minWidth: 0,
                         overflow: "hidden",
-                      }}
-                    >
+                      }}>
                       <Typography
                         fontWeight={700}
                         fontSize="0.9rem"
                         textAlign={isMine ? "end" : "start"}
                         color="primary.main"
-                        sx={{ mb: 0.5 }}
-                      >
+                        sx={{ mb: 0.5 }}>
                         {note.fullName}
                       </Typography>
                       <Typography
@@ -182,8 +172,7 @@ const DialogTabNotes: FC<IProps> = ({ customerId }) => {
                           wordWrap: "break-word",
                           overflowWrap: "break-word",
                           whiteSpace: "pre-wrap",
-                        }}
-                      >
+                        }}>
                         {note.text}
                       </Typography>
                       <Typography
@@ -191,8 +180,7 @@ const DialogTabNotes: FC<IProps> = ({ customerId }) => {
                         color="text.secondary"
                         display="block"
                         textAlign={isMine ? "end" : "start"}
-                        sx={{ mt: 0.5 }}
-                      >
+                        sx={{ mt: 0.5 }}>
                         {new Date(note.createdAt).toLocaleString("uz-UZ", {
                           day: "2-digit",
                           month: "2-digit",
@@ -208,7 +196,7 @@ const DialogTabNotes: FC<IProps> = ({ customerId }) => {
             );
           })}
         </List>
-      )}
+      }
     </Box>
   );
 };

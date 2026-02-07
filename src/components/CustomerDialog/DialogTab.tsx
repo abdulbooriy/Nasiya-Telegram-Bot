@@ -1,6 +1,11 @@
 import { Paper, Tab, Tabs } from "@mui/material";
 import { FC } from "react";
-import { MdChat, MdHistory, MdPerson } from "react-icons/md";
+import {
+  MdChat,
+  MdHistory,
+  MdPerson,
+  MdAccountBalanceWallet,
+} from "react-icons/md";
 
 interface IProps {
   activeTab: number;
@@ -17,14 +22,12 @@ const DialogTab: FC<IProps> = ({ activeTab, setActiveTab }) => {
         overflow: "hidden",
         background: "#f9fafb",
         boxShadow: "0px 6px 20px rgba(0,0,0,0.1)",
-      }}
-    >
+      }}>
       <Tabs
         value={activeTab}
         onChange={(_, newValue) => setActiveTab(newValue)}
         variant="scrollable"
-        scrollButtons="auto"
-      >
+        scrollButtons="auto">
         <Tab
           icon={<MdHistory size={20} />}
           label="To'lovlar"
@@ -36,6 +39,11 @@ const DialogTab: FC<IProps> = ({ activeTab, setActiveTab }) => {
           iconPosition="start"
         />
         <Tab icon={<MdChat size={20} />} label="Izohlar" iconPosition="start" />
+        <Tab
+          icon={<MdAccountBalanceWallet size={20} />}
+          label="Zapazlar"
+          iconPosition="start"
+        />
       </Tabs>
     </Paper>
   );

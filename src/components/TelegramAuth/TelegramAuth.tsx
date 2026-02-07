@@ -69,8 +69,18 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuthSuccess }) => {
   };
 
   const handlePhoneRegistration = () => {
+    const botUsername = import.meta.env.VITE_BOT_USERNAME || "@nasiya_manager_bot";
+    const botUrl = `https://t.me/${botUsername.replace('@', '')}`;
+    
+    // Try to open bot in Telegram
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.openTelegramLink(botUrl);
+    } else {
+      window.open(botUrl, '_blank');
+    }
+    
     showInfo(
-      `Iltimos, Telegram bot'ga /start buyrug'ini yuboring va telefon raqamingizni kiriting.\\\\n\\\\n` +
+      `Iltimos, Telegram bot'ga /start buyrug'ini yuboring va telefon raqamingizni kiriting.\n\n` +
         `Keyin bu sahifani yangilab ko'ring.`,
       "Telefon raqam kerak",
     );

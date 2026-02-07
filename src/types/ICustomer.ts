@@ -3,6 +3,15 @@ export type ICustomer = {
   fullName: string;
   phoneNumber: string;
   delayDays?: number;
+  contracts?: Array<{
+    _id: string;
+    customId?: string;
+    productName: string;
+    prepaidBalance?: number;
+    totalPrice: number;
+    monthlyPayment: number;
+    period: number;
+  }>;
 };
 
 export type ICustomerDetails = {

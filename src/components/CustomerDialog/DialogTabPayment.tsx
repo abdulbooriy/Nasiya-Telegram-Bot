@@ -15,7 +15,10 @@ import { ChevronDown, Wallet } from "lucide-react";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { getContract, getCustomersDebtor } from "../../store/actions/customerActions";
+import {
+  getContract,
+  getCustomersDebtor,
+} from "../../store/actions/customerActions";
 import { blue } from "@mui/material/colors";
 import { ICustomerContract } from "../../types/ICustomer";
 import ContractInfo from "../Drawer/ContractInfo";
@@ -29,7 +32,7 @@ interface IProps {
 const DialogTabPayment: FC<IProps> = ({ customerId }) => {
   const dispatch = useAppDispatch();
   const { customerContracts, isLoading } = useSelector(
-    (state: RootState) => state.customer
+    (state: RootState) => state.customer,
   );
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -61,7 +64,7 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
         ...customerContracts.paidContracts,
       ];
       const updatedContract = allContracts.find(
-        (c) => c._id === selectedContract._id
+        (c) => c._id === selectedContract._id,
       );
       if (updatedContract) {
         setSelectedContract(updatedContract);
@@ -78,7 +81,7 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
   const renderContracts = (
     title: string,
     contracts: ICustomerContract[],
-    highlightColor?: string
+    highlightColor?: string,
   ) => (
     <>
       <Typography
@@ -86,13 +89,16 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
         fontWeight="medium"
         mt={3}
         mb={2}
-        color="text.secondary"
-      >
+        color="text.secondary">
         {title}
       </Typography>
       <Box
-        sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}
-      >
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          width: "100%",
+        }}>
         {contracts.map((contract) => (
           <Accordion
             key={contract._id}
@@ -109,8 +115,7 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
                 margin: 0,
                 boxShadow: "0px 8px 24px rgba(0,0,0,0.12)",
               },
-            }}
-          >
+            }}>
             <AccordionSummary
               expandIcon={<ChevronDown size={20} color="#667eea" />}
               sx={{
@@ -119,14 +124,12 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
                 "& .MuiAccordionSummary-content": {
                   my: 1,
                 },
-              }}
-            >
+              }}>
               <Stack
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
-                sx={{ width: "100%" }}
-              >
+                sx={{ width: "100%" }}>
                 {/* Left side - Product name and payment info in column */}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   {/* 1-qator: Product nomi with Day badge and Contract ID */}
@@ -134,7 +137,10 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
                     {/* Day badge - NEW */}
                     {contract.startDate && (
                       <Chip
-                        label={new Date(contract.startDate).getDate().toString().padStart(2, "0")}
+                        label={new Date(contract.startDate)
+                          .getDate()
+                          .toString()
+                          .padStart(2, "0")}
                         size="small"
                         sx={{
                           height: { xs: 20, sm: 22 },
@@ -144,8 +150,8 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
                           bgcolor: "primary.main",
                           color: "white",
                           "& .MuiChip-label": {
-                            px: { xs: 0.4, sm: 0.6 }
-                          }
+                            px: { xs: 0.4, sm: 0.6 },
+                          },
                         }}
                       />
                     )}
@@ -161,8 +167,8 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
                           bgcolor: "info.main",
                           color: "white",
                           "& .MuiChip-label": {
-                            px: { xs: 0.4, sm: 0.6 }
-                          }
+                            px: { xs: 0.4, sm: 0.6 },
+                          },
                         }}
                       />
                     )}
@@ -174,12 +180,11 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
                         fontSize: responsive.typography.body1,
                         lineHeight: 1.3,
                         wordWrap: "break-word",
-                      }}
-                    >
+                      }}>
                       {contract.productName}
                     </Typography>
                   </Box>
-                  
+
                   {/* 2-qator: To'lov va Progress chiplar */}
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Chip
@@ -241,7 +246,10 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
 
   // ✅ Xatolik holatini tekshirish
   const hasError = !isLoading && !customerContracts;
-  const isEmpty = !isLoading && customerContracts?.allContracts?.length === 0 && customerContracts?.paidContracts?.length === 0;
+  const isEmpty =
+    !isLoading &&
+    customerContracts?.allContracts?.length === 0 &&
+    customerContracts?.paidContracts?.length === 0;
 
   return (
     <Box
@@ -251,8 +259,7 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-      }}
-    >
+      }}>
       {/* Loading */}
       {isLoading && (
         <Box sx={{ my: 4, textAlign: "center" }}>
@@ -265,25 +272,41 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
 
       {/* Xatolik */}
       {hasError && (
-        <Paper sx={{ p: 3, borderRadius: 2, width: "100%", bgcolor: "error.lighter" }}>
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: 2,
+            width: "100%",
+            bgcolor: "error.lighter",
+          }}>
           <Typography variant="h6" color="error.main" gutterBottom>
             ⚠️ Xatolik yuz berdi
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
             Shartnomalarni yuklashda xatolik. Iltimos, qayta urinib ko'ring.
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: "monospace", display: "block", mt: 1 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontFamily: "monospace", display: "block", mt: 1 }}>
             Customer ID: {customerId}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: "monospace", display: "block" }}>
-            customerContracts: {customerContracts === null ? "null" : customerContracts === undefined ? "undefined" : "exists"}
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontFamily: "monospace", display: "block" }}>
+            customerContracts:{" "}
+            {customerContracts === null ?
+              "null"
+            : customerContracts === undefined ?
+              "undefined"
+            : "exists"}
           </Typography>
           <Button
             variant="contained"
             color="primary"
             onClick={() => dispatch(getContract(customerId))}
-            sx={{ mt: 2 }}
-          >
+            sx={{ mt: 2 }}>
             Qayta urinish
           </Button>
         </Paper>
@@ -307,7 +330,7 @@ const DialogTabPayment: FC<IProps> = ({ customerId }) => {
         renderContracts(
           "Bajarilgan shartnomalar",
           customerContracts.paidContracts,
-          blue[50]
+          blue[50],
         )}
 
       <ContractInfo

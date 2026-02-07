@@ -7,6 +7,7 @@ import DialogTab from "./DialogTab";
 import DialogTabCustomerInfo from "./DialogTabCustomerInfo";
 import DialogTabPayment from "./DialogTabPayment";
 import DialogTabNotes from "./DialogTabNotes";
+import DialogTabZapas from "./DialogTabZapas";
 
 const CustomerDetails: FC<{
   customer: ICustomer;
@@ -15,14 +16,10 @@ const CustomerDetails: FC<{
 }> = ({ customer, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
 
-
   return (
     <Box sx={{ py: 1, px: 0, width: "100%", maxWidth: "100%", m: 0 }}>
       <Box sx={{ px: 1 }}>
-        <DialogHeader
-          customer={customer}
-          onClose={onClose}
-        />
+        <DialogHeader customer={customer} onClose={onClose} />
         <DialogTab activeTab={activeTab} setActiveTab={setActiveTab} />
       </Box>
 
@@ -30,9 +27,13 @@ const CustomerDetails: FC<{
         {activeTab === 0 && <DialogTabPayment customerId={customer._id} />}
         {activeTab === 1 && <DialogTabCustomerInfo customerId={customer._id} />}
         {activeTab === 2 && <DialogTabNotes customerId={customer._id} />}
+        {activeTab === 3 && (
+          <DialogTabZapas
+            contracts={customer.contracts || []}
+            customerId={customer._id}
+          />
+        )}
       </Box>
-
-
     </Box>
   );
 };

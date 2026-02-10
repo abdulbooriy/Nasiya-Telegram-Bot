@@ -8,7 +8,10 @@ import {
   Box,
   Stack,
   Chip,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
+
 import {
   Search,
   AlertTriangle,
@@ -19,7 +22,11 @@ import {
   AlertCircle,
   DollarSign,
   Banknote,
+  Filter,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
+
 import ContractDebtorItem from "../components/ContractDebtorItem";
 import { IDebtorContract, ICustomer } from "../types/ICustomer";
 import { useAppDispatch } from "../hooks/useAppDispatch";
@@ -39,22 +46,22 @@ type TabPageProps = {
   index: number;
 };
 
+type FilterType = "all" | "overdue" | "today" | "upcoming";
+
 export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
   const dispatch = useAppDispatch();
   const { customersDebtor, isLoading } = useSelector(
     (state: RootState) => state.customer,
   );
 
-  console.log("customersDebtor", customersDebtor);
-
   const [selectedCustomer, setSelectedCustomer] = useState<ICustomer | null>(
     null,
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const [filterType, setFilterType] = useState<FilterType>("all");
   const debouncedSearch = useDebounce(searchTerm, 300);
   const { dashboard } = useSelector((state: RootState) => state.dashboard);
-  // const { user } = useSelector((state: RootState) => state.auth);
 
   const todayDollar = dashboard?.today?.dollar ?? 0;
   const todaySum = dashboard?.today?.sum ?? 0;
@@ -76,7 +83,6 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
     setSelectedDate("");
   };
 
-  // To'lovlarni 3 guruhga ajratish
   const groupedDebtors = useMemo(() => {
     const filtered = customersDebtor.filter((contract) => {
       const fullName = contract.fullName.toLowerCase();
@@ -95,7 +101,6 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
     const overduePayments: IDebtorContract[] = [];
 
     filtered.forEach((contract) => {
-      // nextPaymentDate'dan to'liq sana olish
       const paymentDate =
         contract.nextPaymentDate ? dayjs(contract.nextPaymentDate) : null;
 
@@ -106,25 +111,17 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
 
       const diffDays = paymentDate.diff(today, "day");
 
-      // 1. BUGUNGI TO'LOVLAR - bugun to'lash kerak
       if (diffDays === 0) {
         todayPayments.push(contract);
-      }
-      // 2. KUNI KO'CHGAN (15 KUNGA) - keyingi 1-15 kun ichida
-      else if (diffDays > 0 && diffDays <= 15) {
+      } else if (diffDays > 0 && diffDays <= 15) {
         upcomingPayments.push(contract);
-      }
-      // 3. KECHIKKAN - muddati o'tgan (manfiy kunlar)
-      else if (diffDays < 0) {
+      } else if (diffDays < 0) {
         overduePayments.push(contract);
-      }
-      // 15 kundan ko'proq - upcoming'ga
-      else {
+      } else {
         upcomingPayments.push(contract);
       }
     });
 
-    // Har bir guruhni sanasi bo'yicha tartiblash
     const sortByDate = (a: IDebtorContract, b: IDebtorContract) => {
       const dateA =
         a.nextPaymentDate ? dayjs(a.nextPaymentDate) : dayjs().add(100, "year");
@@ -133,18 +130,44 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
       return dateA.diff(dateB);
     };
 
-    return {
-      today: todayPayments.sort(sortByDate),
-      upcoming: upcomingPayments.sort(sortByDate),
-      overdue: overduePayments.sort(sortByDate),
-      total: filtered.length,
-    };
-  }, [customersDebtor, debouncedSearch]);
+    const sortedToday = todayPayments.sort(sortByDate);
+    const sortedUpcoming = upcomingPayments.sort(sortByDate);
+    const sortedOverdue = overduePayments.sort(sortByDate);
 
-  console.log("groupedDebtors", groupedDebtors);
+    let displayData: IDebtorContract[] = [];
+    let displayTotal = 0;
+
+    switch (filterType) {
+      case "overdue":
+        displayData = sortedOverdue;
+        displayTotal = sortedOverdue.length;
+        break;
+      case "today":
+        displayData = sortedToday;
+        displayTotal = sortedToday.length;
+        break;
+      case "upcoming":
+        displayData = sortedUpcoming;
+        displayTotal = sortedUpcoming.length;
+        break;
+      case "all":
+      default:
+        displayTotal = filtered.length;
+        break;
+    }
+
+    return {
+      today: sortedToday,
+      upcoming: sortedUpcoming,
+      overdue: sortedOverdue,
+      total: displayTotal,
+      allTotal: filtered.length,
+      displayData,
+      showGrouped: filterType === "all",
+    };
+  }, [customersDebtor, debouncedSearch, filterType]);
 
   const handleContractClick = (contract: IDebtorContract) => {
-    // Mijozni CustomerDialog'da ochish uchun ICustomer formatiga o'tkazish
     const customer: ICustomer = {
       _id: contract.customerId,
       fullName: contract.fullName,
@@ -187,7 +210,7 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
                 Jami qarzdorlar
               </Typography>
               <Typography variant="h4" fontWeight={700}>
-                {groupedDebtors.total}
+                {groupedDebtors.allTotal}
               </Typography>
             </Box>
           </Box>
@@ -199,16 +222,15 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
           sx={{
             display: "grid",
             gridTemplateColumns: {
-              xs: "1fr", // Mobile: 1 ustun
-              sm: "1fr", // Small tablet: 1 ustun
-              md: "repeat(2, 1fr)", // Medium tablet: 2 ustun
-              lg: "repeat(2, 1fr)", // Large desktop: 3 ustun
-              xl: "repeat(auto-fit, minmax(300px, 1fr))", // XL: auto-fit
+              xs: "1fr",
+              sm: "1fr",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(2, 1fr)",
+              xl: "repeat(auto-fit, minmax(300px, 1fr))",
             },
             gap: responsive.spacing.gap,
             mb: 3,
           }}>
-          {/* Today's Payments Dollar */}
           <DashboardCardImproved
             title="Bugungi to'lovlar ($)"
             total={`${todayDollar} $`}
@@ -217,7 +239,6 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
             color="primary"
           />
 
-          {/* Today's Payments UZS */}
           <DashboardCardImproved
             title="Bugungi to'lovlar (So'm)"
             total={`${todaySum.toLocaleString()} UZS`}
@@ -237,6 +258,72 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
           boxShadow: shadows.md,
         }}>
         <Stack spacing={2}>
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 1.5,
+              }}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  color: "text.primary",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                }}>
+                <Filter size={18} />
+                To'lovlar filtri
+              </Typography>
+            </Box>
+
+            <ToggleButtonGroup
+              value={filterType}
+              exclusive
+              onChange={(_, newFilter) => {
+                if (newFilter !== null) {
+                  setFilterType(newFilter);
+                }
+              }}
+              fullWidth
+              size="small"
+              sx={{
+                "& .MuiToggleButton-root": {
+                  py: 1,
+                  px: 1.5,
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  border: "1.5px solid #e0e0e0",
+                  "&.Mui-selected": {
+                    bgcolor: "#667eea",
+                    color: "white",
+                    borderColor: "#667eea",
+                    "&:hover": {
+                      bgcolor: "#5568d3",
+                    },
+                  },
+                },
+              }}>
+              <ToggleButton value="all">
+                <CheckCircle size={16} style={{ marginRight: 4 }} />
+                Barchasi ({groupedDebtors.allTotal})
+              </ToggleButton>
+              <ToggleButton value="overdue">
+                <XCircle size={16} style={{ marginRight: 4 }} />
+                Kechikkan ({groupedDebtors.overdue.length})
+              </ToggleButton>
+              <ToggleButton value="accepted">
+                <CheckCircle size={16} style={{ marginRight: 4 }} />
+                Tasdiqlangan ({groupedDebtors.today.length})
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+
           <Box>
             <Box
               sx={{
@@ -355,116 +442,126 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
 
       {groupedDebtors.total > 0 ?
         <Box>
-          {/* 1. BUGUNGI TO'LOVLAR */}
-          {groupedDebtors.today.length > 0 && (
-            <Box mb={3}>
-              <Paper
-                sx={{
-                  p: 2,
-                  mb: 2,
-                  borderRadius: borderRadius.lg,
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  color: "white",
-                  boxShadow: shadows.colored("rgba(102, 126, 234, 0.3)"),
-                }}>
-                <Box display="flex" alignItems="center" gap={1.5}>
-                  <Clock size={24} />
-                  <Box>
-                    <Typography variant="h6" fontWeight={700}>
-                      BUGUNGI TO'LOVLAR
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                      {groupedDebtors.today.length} ta to'lov
-                    </Typography>
-                  </Box>
+          {groupedDebtors.showGrouped ?
+            <>
+              {groupedDebtors.today.length > 0 && (
+                <Box mb={3}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      mb: 2,
+                      borderRadius: borderRadius.lg,
+                      background:
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      color: "white",
+                      boxShadow: shadows.colored("rgba(102, 126, 234, 0.3)"),
+                    }}>
+                    <Box display="flex" alignItems="center" gap={1.5}>
+                      <Clock size={24} />
+                      <Box>
+                        <Typography variant="h6" fontWeight={700}>
+                          BUGUNGI TO'LOVLAR
+                        </Typography>
+                        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                          {groupedDebtors.today.length} ta to'lov
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Paper>
+                  <List disablePadding>
+                    {groupedDebtors.today.map((contract) => (
+                      <ContractDebtorItem
+                        key={contract._id}
+                        contract={contract}
+                        onClick={handleContractClick}
+                      />
+                    ))}
+                  </List>
                 </Box>
-              </Paper>
-              <List disablePadding>
-                {groupedDebtors.today.map((contract) => (
-                  <ContractDebtorItem
-                    key={contract._id}
-                    contract={contract}
-                    onClick={handleContractClick}
-                  />
-                ))}
-              </List>
-            </Box>
-          )}
+              )}
 
-          {/* 2. KUNI KO'CHGAN (15 KUNGA) */}
-          {groupedDebtors.upcoming.length > 0 && (
-            <Box mb={3}>
-              <Paper
-                sx={{
-                  p: 2,
-                  mb: 2,
-                  borderRadius: borderRadius.lg,
-                  background:
-                    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                  color: "white",
-                  boxShadow: shadows.colored("rgba(240, 147, 251, 0.3)"),
-                }}>
-                <Box display="flex" alignItems="center" gap={1.5}>
-                  <TrendingUp size={24} />
-                  <Box>
-                    <Typography variant="h6" fontWeight={700}>
-                      KUNI KO'CHGAN (15 KUNGA)
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                      {groupedDebtors.upcoming.length} ta to'lov
-                    </Typography>
-                  </Box>
+              {groupedDebtors.upcoming.length > 0 && (
+                <Box mb={3}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      mb: 2,
+                      borderRadius: borderRadius.lg,
+                      background:
+                        "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                      color: "white",
+                      boxShadow: shadows.colored("rgba(240, 147, 251, 0.3)"),
+                    }}>
+                    <Box display="flex" alignItems="center" gap={1.5}>
+                      <TrendingUp size={24} />
+                      <Box>
+                        <Typography variant="h6" fontWeight={700}>
+                          KUNI KO'CHGAN (15 KUNGA)
+                        </Typography>
+                        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                          {groupedDebtors.upcoming.length} ta to'lov
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Paper>
+                  <List disablePadding>
+                    {groupedDebtors.upcoming.map((contract) => (
+                      <ContractDebtorItem
+                        key={contract._id}
+                        contract={contract}
+                        onClick={handleContractClick}
+                      />
+                    ))}
+                  </List>
                 </Box>
-              </Paper>
-              <List disablePadding>
-                {groupedDebtors.upcoming.map((contract) => (
-                  <ContractDebtorItem
-                    key={contract._id}
-                    contract={contract}
-                    onClick={handleContractClick}
-                  />
-                ))}
-              </List>
-            </Box>
-          )}
+              )}
 
-          {/* 3. KECHIKKAN TO'LOVLAR */}
-          {groupedDebtors.overdue.length > 0 && (
-            <Box mb={3}>
-              <Paper
-                sx={{
-                  p: 2,
-                  mb: 2,
-                  borderRadius: borderRadius.lg,
-                  background:
-                    "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-                  color: "white",
-                  boxShadow: shadows.colored("rgba(250, 112, 154, 0.3)"),
-                }}>
-                <Box display="flex" alignItems="center" gap={1.5}>
-                  <AlertCircle size={24} />
-                  <Box>
-                    <Typography variant="h6" fontWeight={700}>
-                      KECHIKKAN TO'LOVLAR
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                      {groupedDebtors.overdue.length} ta to'lov
-                    </Typography>
-                  </Box>
+              {groupedDebtors.overdue.length > 0 && (
+                <Box mb={3}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      mb: 2,
+                      borderRadius: borderRadius.lg,
+                      background:
+                        "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                      color: "white",
+                      boxShadow: shadows.colored("rgba(250, 112, 154, 0.3)"),
+                    }}>
+                    <Box display="flex" alignItems="center" gap={1.5}>
+                      <AlertCircle size={24} />
+                      <Box>
+                        <Typography variant="h6" fontWeight={700}>
+                          KECHIKKAN TO'LOVLAR
+                        </Typography>
+                        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                          {groupedDebtors.overdue.length} ta to'lov
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Paper>
+                  <List disablePadding>
+                    {groupedDebtors.overdue.map((contract) => (
+                      <ContractDebtorItem
+                        key={contract._id}
+                        contract={contract}
+                        onClick={handleContractClick}
+                      />
+                    ))}
+                  </List>
                 </Box>
-              </Paper>
-              <List disablePadding>
-                {groupedDebtors.overdue.map((contract) => (
-                  <ContractDebtorItem
-                    key={contract._id}
-                    contract={contract}
-                    onClick={handleContractClick}
-                  />
-                ))}
-              </List>
-            </Box>
-          )}
+              )}
+            </>
+          : <List disablePadding>
+              {groupedDebtors.displayData.map((contract) => (
+                <ContractDebtorItem
+                  key={contract._id}
+                  contract={contract}
+                  onClick={handleContractClick}
+                />
+              ))}
+            </List>
+          }
         </Box>
       : <Paper
           sx={{
@@ -474,12 +571,23 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
             bgcolor: "grey.50",
           }}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            Qarzdor shartnomalar topilmadi
+            {filterType === "all" ?
+              "Qarzdor shartnomalar topilmadi"
+            : filterType === "overdue" ?
+              "Kechikkan to'lovlar topilmadi"
+            : filterType === "today" ?
+              "Bugungi to'lovlar topilmadi"
+            : "15 kun ichidagi to'lovlar topilmadi"}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {selectedDate ?
-              `${dayjs(selectedDate).format("DD MMMM YYYY")} sanasiga qadar qarzdor shartnomalar yo'q`
-            : "Bugungi kunga qadar qarzdor shartnomalar yo'q"}
+              `${dayjs(selectedDate).format("DD MMMM YYYY")} sanasiga qadar ${
+                filterType === "all" ? "qarzdor shartnomalar" : "to'lovlar"
+              } yo'q`
+            : `Bugungi kunga qadar ${
+                filterType === "all" ? "qarzdor shartnomalar" : "to'lovlar"
+              } yo'q`
+            }
           </Typography>
         </Paper>
       }

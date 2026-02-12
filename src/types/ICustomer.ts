@@ -26,7 +26,12 @@ export type ICustomerDetails = {
 };
 
 export type PaymentType = "initial" | "monthly" | "extra";
-export type PaymentStatus = "PAID" | "UNDERPAID" | "OVERPAID" | "PENDING" | "REJECTED";
+export type PaymentStatus =
+  | "PAID"
+  | "UNDERPAID"
+  | "OVERPAID"
+  | "PENDING"
+  | "REJECTED";
 
 export type ICustomerContract = {
   _id: string;
@@ -86,4 +91,6 @@ export type IDebtorContract = {
   monthlyPayment?: number; // ✅ Oylik to'lov
   initialPayment?: number; // ✅ Boshlang'ich to'lov
   isPending?: boolean; // ✅ YANGI: Kassa kutayotgan to'lov bormi?
+  hasPaidPayments?: boolean; // ✅ YANGI: To'langan to'lovlar bormi?
+  nextPaymentStatus?: "PENDING" | "TODAY" | "UPCOMING" | "OVERDUE"; // ✅ YANGI: To'lov statusi
 };

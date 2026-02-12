@@ -2,12 +2,11 @@ import { memo } from "react";
 import {
   ListItemButton,
   ListItemText,
-  Avatar,
   Typography,
   Box,
   Chip,
 } from "@mui/material";
-import { delay, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Clock, Package } from "lucide-react";
 import { IDebtorContract } from "../types/ICustomer";
 import { borderRadius, shadows } from "../theme/colors";
@@ -85,8 +84,9 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
           bgcolor: contract.isPending ? "success.lighter" : "background.paper",
           border: "2px solid",
           borderColor: contract.isPending ? "success.main" : "error.main",
-          boxShadow: contract.isPending
-            ? shadows.colored("rgba(16, 185, 129, 0.2)")
+          boxShadow:
+            contract.isPending ?
+              shadows.colored("rgba(16, 185, 129, 0.2)")
             : shadows.sm,
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           "&:hover": {
@@ -94,8 +94,7 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
             borderColor: contract.isPending ? "success.dark" : "error.dark",
             boxShadow: shadows.md,
           },
-        }}
-      >
+        }}>
         {/* Avatar - responsive sizing */}
         {/* <Avatar
         sx={{
@@ -121,8 +120,7 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
               sx={{
                 flexWrap: { xs: "wrap", sm: "nowrap" },
                 minHeight: { xs: 24, sm: "auto" },
-              }}
-            >
+              }}>
               {/* Day badge - NEW */}
               {(contract.initialPaymentDueDate || contract.startDate) && (
                 <Chip
@@ -157,18 +155,46 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
                   lineHeight: 1.3,
                   flex: 1,
                   minWidth: { xs: "120px", sm: "auto" },
-                }}
-              >
+                }}>
                 {getDisplayName(contract.fullName)}
               </Typography>
+
+              {/* ✅ YANGI: Status badge */}
+              {contract.nextPaymentStatus && (
+                <Chip
+                  label={
+                    contract.nextPaymentStatus === "PENDING" ? "KUTILMOQDA"
+                    : contract.nextPaymentStatus === "TODAY" ?
+                      "BUGUN"
+                    : contract.nextPaymentStatus === "UPCOMING" ?
+                      "YAQINDA"
+                    : "KECHIKKAN"
+                  }
+                  size="small"
+                  sx={{
+                    height: { xs: 20, sm: 22 },
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    bgcolor:
+                      contract.nextPaymentStatus === "PENDING" ? "#ffa726"
+                      : contract.nextPaymentStatus === "TODAY" ? "#667eea"
+                      : contract.nextPaymentStatus === "UPCOMING" ? "#f093fb"
+                      : "#fa709a",
+                    color: "white",
+                    "& .MuiChip-label": {
+                      px: { xs: 0.5, sm: 1 },
+                    },
+                  }}
+                />
+              )}
+
               <Typography
                 sx={{
                   fontSize: { xs: "20px", sm: responsive.typography.body1 },
                   fontWeight: 800,
-                  color: contract.isPending ? "success.priceSuccess" : "error.main",
-                }}
-              >
-                {/* {contract.totalPrice} */}
+                  color:
+                    contract.isPending ? "success.priceSuccess" : "error.main",
+                }}>
                 {`${contract.monthlyPayment} $`}
               </Typography>
               {/* Delay days badge - responsive */}
@@ -204,9 +230,9 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
                   return (
                     <Chip
                       label={
-                        contract.remainingDebt
-                          ? "TO'LIQ BERDI"
-                          : "TO'LIQ BERMADI"
+                        contract.remainingDebt ? "TO'LIQ BERDI" : (
+                          "TO'LIQ BERMADI"
+                        )
                       }
                       sx={{
                         height: { xs: 14, sm: 16 },
@@ -229,8 +255,7 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
               display="flex"
               flexDirection="row"
               justifyContent="space-between"
-              gap={0.5}
-            >
+              gap={0.5}>
               {/* Product name */}
               <Box display="flex" alignItems="center" gap={0.5}>
                 <Package size={responsive.icon.small.xs} color="#6B7280" />
@@ -241,8 +266,7 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
                     fontSize: responsive.typography.body2,
                     lineHeight: 1.3,
                     fontWeight: 600,
-                  }}
-                >
+                  }}>
                   {truncateProductName(contract.productName)}
                 </Typography>
               </Box>
@@ -278,8 +302,7 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
                         fontSize: responsive.typography.caption,
                         fontWeight: 700,
                         color: "primary.main",
-                      }}
-                    >
+                      }}>
                       {paidMonths}
                     </Typography>
                     <Typography
@@ -287,8 +310,7 @@ const ContractDebtorItem: React.FC<ContractDebtorItemProps> = memo(
                       sx={{
                         fontSize: responsive.typography.caption,
                         color: "text.secondary",
-                      }}
-                    >
+                      }}>
                       / {totalMonths} oy
                     </Typography>
                   </Box>

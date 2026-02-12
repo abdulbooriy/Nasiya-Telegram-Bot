@@ -1,4 +1,3 @@
-
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   start,
@@ -25,35 +24,73 @@ export const getCustomers = (): AppThunk => async (dispatch) => {
   } catch (error) {
     dispatch(failure());
     if (axios.isAxiosError(error)) {
-      dispatch(setError({
-        message: error.response?.data?.message || "Mijozlarni yuklashda xatolik",
-        type: 'error'
-      }));
+      dispatch(
+        setError({
+          message:
+            error.response?.data?.message || "Mijozlarni yuklashda xatolik",
+          type: "error",
+        }),
+      );
     }
   }
 };
 
-export const getCustomersDebtor = (filterDate?: string): AppThunk => async (dispatch) => {
-  dispatch(start());
-  try {
-    const url = filterDate 
-      ? `/customer/get-debtor?date=${filterDate}`
-      : "/customer/get-debtor";
+export const getCustomersDebtor =
+  (filterDate?: string): AppThunk =>
+  async (dispatch) => {
+    dispatch(start());
+    try {
+      const url =
+        filterDate ?
+          `/customer/get-debtor?date=${filterDate}`
+        : "/customer/get-debtor";
 
-    const res = await authApi.get(url);
-    const { data } = res;
+      const res = await authApi.get(url);
+      const { data } = res;
 
-    dispatch(setCustomersDebtor(data.data || []));
-  } catch (error) {
-    dispatch(failure());
-    if (axios.isAxiosError(error)) {
-      dispatch(setError({
-        message: error.response?.data?.message || "Qarzdorlarni yuklashda xatolik",
-        type: 'error'
-      }));
+      dispatch(setCustomersDebtor(data.data || []));
+    } catch (error) {
+      dispatch(failure());
+      if (axios.isAxiosError(error)) {
+        dispatch(
+          setError({
+            message:
+              error.response?.data?.message || "Qarzdorlarni yuklashda xatolik",
+            type: "error",
+          }),
+        );
+      }
     }
-  }
-};
+  };
+
+export const getAllCustomersDebtors =
+  (filterDate?: string): AppThunk =>
+  async (dispatch) => {
+    dispatch(start());
+    try {
+      const url =
+        filterDate ?
+          `/customer/get-all-debtors?date=${filterDate}`
+        : "/customer/get-all-debtors";
+
+      const res = await authApi.get(url);
+      const { data } = res;
+
+      dispatch(setCustomersDebtor(data.data || []));
+    } catch (error) {
+      dispatch(failure());
+      if (axios.isAxiosError(error)) {
+        dispatch(
+          setError({
+            message:
+              error.response?.data?.message ||
+              "Barcha qarzdorlarni yuklashda xatolik",
+            type: "error",
+          }),
+        );
+      }
+    }
+  };
 
 export const getCustomersPayment = (): AppThunk => async (dispatch) => {
   dispatch(start());
@@ -64,40 +101,48 @@ export const getCustomersPayment = (): AppThunk => async (dispatch) => {
   } catch (error) {
     dispatch(failure());
     if (axios.isAxiosError(error)) {
-      dispatch(setError({
-        message: error.response?.data?.message || "To'lovlarni yuklashda xatolik",
-        type: 'error'
-      }));
+      dispatch(
+        setError({
+          message:
+            error.response?.data?.message || "To'lovlarni yuklashda xatolik",
+          type: "error",
+        }),
+      );
     }
   }
 };
 
 export const getCustomer =
   (id: string): AppThunk =>
-    async (dispatch) => {
-      dispatch(start());
-      try {
-        const res = await authApi.get(`/customer/get-by-id/${id}`);
-        const { data } = res;
-        dispatch(setCustomerDetails(data.data));
-      } catch (error) {
-        dispatch(failure());
-        if (axios.isAxiosError(error)) {
-          dispatch(setError({
-            message: error.response?.data?.message || "Mijoz ma'lumotlarini yuklashda xatolik",
-            type: 'error'
-          }));
-        }
+  async (dispatch) => {
+    dispatch(start());
+    try {
+      const res = await authApi.get(`/customer/get-by-id/${id}`);
+      const { data } = res;
+      dispatch(setCustomerDetails(data.data));
+    } catch (error) {
+      dispatch(failure());
+      if (axios.isAxiosError(error)) {
+        dispatch(
+          setError({
+            message:
+              error.response?.data?.message ||
+              "Mijoz ma'lumotlarini yuklashda xatolik",
+            type: "error",
+          }),
+        );
       }
-    };
-
+    }
+  };
 
 export const getContract = createAsyncThunk(
   "customer/getContract",
   async (customerId: string, { dispatch, rejectWithValue }) => {
     try {
       console.log("🔍 [API] Fetching contracts for:", customerId);
-      const res = await authApi.get(`/customer/get-contract-by-id/${customerId}`);
+      const res = await authApi.get(
+        `/customer/get-contract-by-id/${customerId}`,
+      );
       const { data } = res;
 
       console.log("📦 [API] Response received:", {
@@ -120,9 +165,8 @@ export const getContract = createAsyncThunk(
       });
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
-
 
 export const payDebt = createAsyncThunk(
   "customer/payDebt",
@@ -134,7 +178,7 @@ export const payDebt = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
 
 export const payNewDebt = createAsyncThunk(
@@ -147,7 +191,7 @@ export const payNewDebt = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
 
 export const payAllRemaining = createAsyncThunk(
@@ -166,18 +210,20 @@ export const payAllRemaining = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
-
 
 export const postponePayment = createAsyncThunk(
   "customer/postponePayment",
-  async (data: {
-    contractId: string;
-    postponeDate: string;
-    reason: string;
-    customerId: string;
-  }, { dispatch, rejectWithValue }) => {
+  async (
+    data: {
+      contractId: string;
+      postponeDate: string;
+      reason: string;
+      customerId: string;
+    },
+    { dispatch, rejectWithValue },
+  ) => {
     try {
       const response = await authApi.post("/payment/postpone-payment", {
         contractId: data.contractId,
@@ -189,5 +235,5 @@ export const postponePayment = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );

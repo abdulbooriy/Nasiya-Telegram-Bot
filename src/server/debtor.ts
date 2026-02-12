@@ -19,3 +19,25 @@ export async function getDebts(customerId: string, filter = "all") {
     );
   }
 }
+
+/**
+ * ✅ YANGI: Barcha qarzdorlarni olish (tasdiqlangan, kechikkan, kutilmoqda)
+ * @param filterDate - Sana filtri (optional)
+ * @returns { status: "success", data: IDebtorContract[] }
+ */
+export async function getAllDebtors(filterDate?: string) {
+  try {
+    const url =
+      filterDate ?
+        `/customer/get-all-debtors?date=${filterDate}`
+      : "/customer/get-all-debtors";
+
+    const response = await authApi.get(url);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching all debtors:", error);
+    throw new Error(
+      error.response?.data?.message || "Barcha qarzdorlarni yuklashda xatolik",
+    );
+  }
+}

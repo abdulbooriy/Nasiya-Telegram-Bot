@@ -32,7 +32,7 @@ import { IDebtorContract, ICustomer } from "../types/ICustomer";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { getCustomersDebtor } from "../store/actions/customerActions";
+import { getAllCustomersDebtors } from "../store/actions/customerActions";
 import Loader from "../components/Loader/Loader";
 import CustomerDialog from "../components/CustomerDialog/CustomerDialog";
 import { borderRadius, shadows } from "../theme/colors";
@@ -71,7 +71,7 @@ export default function DebtorsPage({ activeTabIndex, index }: TabPageProps) {
     if (activeTabIndex === index) {
       const dateFilter =
         selectedDate && selectedDate.trim() !== "" ? selectedDate : undefined;
-      dispatch(getCustomersDebtor(dateFilter));
+      dispatch(getAllCustomersDebtors(dateFilter)); // ✅ YANGI ACTION ISHLATAMIZ
     }
   }, [activeTabIndex, index, selectedDate, dispatch]);
 

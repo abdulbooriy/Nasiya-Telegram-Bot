@@ -14,11 +14,11 @@ const theme = createTheme({
       dark: "#d97706",
     },
     success: {
-      main: "#10b981", // Professional green
-      light: "#34d399",
-      dark: "#059669",
+      main: "#16a34a", // Vibrant green
+      light: "#4ade80",
+      dark: "#166534",
       // @ts-ignore - Custom MUI colors
-      lighter: "#d1fae5",
+      lighter: "#bbf7d0",
     },
     error: {
       main: "#ef4444", // Professional red

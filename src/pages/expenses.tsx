@@ -133,7 +133,7 @@ export default function ExpensesView({ activeTabIndex, index }: TabPageProps) {
             }}
           >
             {getDisplayName(
-              `${user.firstname} ${user.lastname}`.trim() || "Foydalanuvchi",
+              `${user?.firstname} ${user?.lastname}`.trim() || "Foydalanuvchi",
             )}
           </Typography>
           <Typography

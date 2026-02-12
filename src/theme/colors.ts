@@ -9,12 +9,14 @@ export const colors = {
     shadow: 'rgba(37, 99, 235, 0.15)',
   },
   
-  // Success - Professional Green (no gradient)
+  // Success - Vibrant Green (harmonizes with blue primary)
   success: {
-    main: '#10b981',
-    light: '#34d399',
-    dark: '#059669',
-    shadow: 'rgba(16, 185, 129, 0.15)',
+    main: '#16a34a',
+    light: '#4ade80',
+    lighter: '#bbf7d0',
+    dark: '#166534',
+    priceSuccess: '#166534',
+    shadow: 'rgba(22, 163, 74, 0.15)',
   },
   
   // Error - Professional Red (no gradient)

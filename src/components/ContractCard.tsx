@@ -33,16 +33,19 @@ const ContractCard: FC<ContractCardProps> = ({
         return {
           borderColor: "error.main",
           borderWidth: "2px",
+          bgcolor: "background.paper",
         };
       case "paid":
         return {
           borderColor: "success.main",
           borderWidth: "2px",
+          bgcolor: "success.lighter",
         };
       default:
         return {
           borderColor: "divider",
           borderWidth: "1px",
+          bgcolor: "background.paper",
         };
     }
   };
@@ -58,7 +61,6 @@ const ContractCard: FC<ContractCardProps> = ({
       sx={{
         p: { xs: 1.5, sm: 2, md: 2.5 },
         mb: 2,
-        bgcolor: "background.paper",
         border: "solid",
         ...getVariantStyles(),
         borderRadius: borderRadius.md,

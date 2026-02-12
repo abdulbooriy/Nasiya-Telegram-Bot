@@ -6,6 +6,7 @@ import {
   setInActiveExpenses,
   start,
 } from "../slices/expensesSlice";
+import { getDashboard } from "./dashboardActions";
 import { IAddExpenses, IUpdateExpenses } from "../../types/IExpenses";
 
 export const getActiveExpenses = (): AppThunk => async (dispatch) => {
@@ -38,6 +39,7 @@ export const addExpenses =
       await authApi.post("/expenses/", expensesData);
       dispatch(getActiveExpenses());
       dispatch(getInActiveExpenses());
+      dispatch(getDashboard());
     } catch (error: any) {
       dispatch(failure());
     }
@@ -51,6 +53,7 @@ export const updateExpenses =
       await authApi.put("/expenses/", expensesData);
       dispatch(getActiveExpenses());
       dispatch(getInActiveExpenses());
+      dispatch(getDashboard());
     } catch (error: any) {
       dispatch(failure());
     }
@@ -64,6 +67,7 @@ export const returnExpenses =
       await authApi.put("/expenses/return", { id });
       dispatch(getActiveExpenses());
       dispatch(getInActiveExpenses());
+      dispatch(getDashboard());
     } catch (error: any) {
       dispatch(failure());
     }

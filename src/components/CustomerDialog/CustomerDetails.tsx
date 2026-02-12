@@ -8,6 +8,7 @@ import DialogTabCustomerInfo from "./DialogTabCustomerInfo";
 import DialogTabPayment from "./DialogTabPayment";
 import DialogTabNotes from "./DialogTabNotes";
 import DialogTabZapas from "./DialogTabZapas";
+import DialogTabDebts from "./DialogTabDebts";
 
 const CustomerDetails: FC<{
   customer: ICustomer;
@@ -33,6 +34,7 @@ const CustomerDetails: FC<{
             customerId={customer._id}
           />
         )}
+        {activeTab === 4 && <DialogTabDebts customerId={customer._id} />}
       </Box>
     </Box>
   );

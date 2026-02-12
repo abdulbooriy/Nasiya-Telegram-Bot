@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider, CircularProgress } from "@mui/material";
 import { Toaster } from "react-hot-toast";
+
 import theme from "./theme";
 import TabsLayout from "./layouts/TabLayout";
 import { AlertProvider } from "./components/AlertSystem";
@@ -11,6 +12,7 @@ import { TelegramAuth } from "./components/TelegramAuth";
 import { loginSuccess } from "./store/slices/authSlice";
 import { RootState } from "./store";
 import Error from "./components/Error";
+import { IProfile } from "./types/profile";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,7 +26,7 @@ function App() {
     setLoading(false);
   }, []);
 
-  const handleTelegramAuthSuccess = (token: string, profile: any) => {
+  const handleTelegramAuthSuccess = (token: string, profile: IProfile) => {
     dispatch(loginSuccess({ token, profile }));
   };
 
@@ -36,8 +38,7 @@ function App() {
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
-        }}
-      >
+        }}>
         <CircularProgress />
       </div>
     );
@@ -63,14 +64,12 @@ function App() {
       />
       <AlertProvider>
         <ErrorSnackbar />
-        {isAuthenticated ? (
+        {isAuthenticated ?
           <Routes>
             <Route path="/" element={<Navigate to="/debtors" />} />
             <Route path="/*" element={<TabsLayout />} />
           </Routes>
-        ) : (
-          <TelegramAuth onAuthSuccess={handleTelegramAuthSuccess} />
-        )}
+        : <TelegramAuth onAuthSuccess={handleTelegramAuthSuccess} />}
       </AlertProvider>
     </ThemeProvider>
   );
